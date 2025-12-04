@@ -16,6 +16,10 @@ public class ColorTap {
     JLabel textLabel = new JLabel();
     JPanel textPanel = new JPanel();
     JPanel boardPanel = new JPanel();
+    JLabel timerLabel = new JLabel(); 
+
+    //countown timer starting value
+    int seconds = 60;
     
     ColorTap(){
         // Create the window elements 
@@ -33,13 +37,35 @@ public class ColorTap {
         textLabel.setText("Color Tap");
         textLabel.setOpaque(true);
 
+        //timer label that shows the countdown
+        timerLabel.setBackground(Color.darkGray);
+        timerLabel.setForeground(Color.white);
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        timerLabel.setHorizontalAlignment(JLabel.RIGHT);
+        timerLabel.setText("Time: " + seconds + "s  ");
+        timerLabel.setOpaque(true);
+
         textPanel.setLayout(new BorderLayout());
         textPanel.add(textLabel);
+        textPanel.add(timerLabel, BorderLayout.EAST);
         frame.add(textPanel, BorderLayout.NORTH);
 
         boardPanel.setLayout(new GridLayout(3, 3));
         boardPanel.setBackground(Color.darkGray);
         frame.add(boardPanel);
+
+        //countdown timer that updates each second
+        Timer countdown = new Timer(1000, e -> {
+            seconds--;
+            if (seconds >= 0) {
+                timerLabel.setText("Time: " + seconds + "s  ");
+            }
+
+            if (seconds <= 0) {
+                timerLabel.setText("⏰ Time’s Up!  ");
+                ((Timer)e.getSource()).stop();
+                endGame();
+            }
 
         /*JButton tile = new JButton();
                 board[r][c] = tile;
@@ -67,4 +93,5 @@ public class ColorTap {
                 });
 */
     }
+
 }

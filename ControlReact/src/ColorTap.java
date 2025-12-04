@@ -66,6 +66,8 @@ public class ColorTap {
             setupKeyControls(); // Start checking for key inputs
             switchColor();
         });
+        //display the score
+        JLabel scoreLabel = new JLabel("Score: " + score);
 
         pane.setLayout(null);
         pane.setPreferredSize(new Dimension(boardWidth,boardHeight));
@@ -138,6 +140,7 @@ public class ColorTap {
 
         textPanel.setLayout(new BorderLayout());
         textPanel.add(textLabel);
+        textPanel.add(scoreLabel, BorderLayout.WEST);
         textPanel.add(timerLabel, BorderLayout.EAST);
         frame.add(textPanel, BorderLayout.NORTH);
 
@@ -239,3 +242,4 @@ class ColoredSquarePanel extends JPanel {
     }
 
 }
+

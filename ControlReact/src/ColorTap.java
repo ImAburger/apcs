@@ -6,6 +6,8 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+
 import javax.swing.*;
 
 public class ColorTap {
@@ -15,6 +17,7 @@ public class ColorTap {
 
     char curColor;
     char[] colorKeys = {'R', 'B', 'G', 'Y'};
+    ArrayList<Integer> reactionTimes = new ArrayList<>();
 
     JFrame frame = new JFrame("ColorTap");
     JLabel textLabel = new JLabel();
@@ -37,7 +40,9 @@ public class ColorTap {
 
     JLabel timerLabel = new JLabel(); 
     Timer countdown;
-    private int seconds = 60;
+    Timer reactionTimer;
+    private int seconds = 30;
+    private int msElapsed = 0;
     ColorTap(){
         // Create the window elements 
         startScreen.setLayout(new GridBagLayout());
@@ -48,6 +53,7 @@ public class ColorTap {
 
         startButton.addActionListener(e -> { // Starting the game
             cardLayout.show(mainPanel, "GAME");
+            textLabel.setText("Score: 0");
             //countdown timer that updates each second
             countdown = new Timer(1000, ev -> {
                 seconds--;
@@ -56,18 +62,21 @@ public class ColorTap {
                 }
 
                 if (seconds <= 0) {
-                    timerLabel.setText("⏰ Time’s Up!  ");
+                    timerLabel.setText("Time’s Up!  ");
                     endGame();
                     ((Timer)ev.getSource()).stop();
                 }
             });
             countdown.start();
 
+            reactionTimer = new Timer(1, ev -> {
+                msElapsed++;
+            });
+            reactionTimer.start();
+
             setupKeyControls(); // Start checking for key inputs
             switchColor();
         });
-        //display the score
-        JLabel scoreLabel = new JLabel("Score: " + score);
 
         pane.setLayout(null);
         pane.setPreferredSize(new Dimension(boardWidth,boardHeight));
@@ -92,7 +101,7 @@ public class ColorTap {
         frame.add(textPanel, BorderLayout.NORTH);
 
         bg.setBounds(0,0,600,600);
-        square.setBounds(0,0,600,600);
+        square.setBounds(0,0,500,500);
 
         pane.add(bg, Integer.valueOf(0));
         pane.add(square, Integer.valueOf(1));
@@ -100,20 +109,25 @@ public class ColorTap {
 
         instructions.setBackground(Color.darkGray);
         instructions.setForeground(Color.white);
-        instructions.setFont(new Font("Arial", Font.BOLD, 30));
-        instructions.setText("The goal of this game is to correctly press the right key on the keyboard that matches the 4 colors when a color is displayed on the screen. \nFor example, if the color displayed on the screen is blue, you would press the key “B”.\n For each correct press, your score will go up. For each incorrect press, your score will go down.\n You will have a minute to try to correctly press the right key as fast as possible.");
+        instructions.setPreferredSize(new Dimension(500, 300));
+        instructions.setFont(new Font("Arial", Font.BOLD, 20));
+        instructions.setText("<html>The goal of this game is to correctly press the right key on the keyboard that matches the 4 colors when a color is displayed on the screen.<br>" +
+            "For example, if the color displayed on the screen is blue, you would press the key “B”.<br>" +
+            " For each correct press, your score will go up. For each incorrect press, your score will go down.<br>" +
+            " You will have a minute to try to correctly press the right key as fast as possible.</html>"
+        );
         instructions.setOpaque(true);
 
+        resultsText.setPreferredSize(new Dimension(500, 300));
         resultsText.setBackground(Color.darkGray);
         resultsText.setForeground(Color.white);
         resultsText.setFont(new Font("Arial", Font.BOLD, 30));
-        resultsText.setText("your did it!!!!");
         resultsText.setOpaque(true);
 
         startScreen.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
-        gbc.insets = new Insets(-200, 0, 0, 0);   // Move the instructions up 50 px
+        gbc.insets = new Insets(-250, 0, 0, 0);   // Move the instructions up 50 px
         startScreen.add(instructions, gbc);
 
         gbc.gridy = 1;
@@ -140,7 +154,6 @@ public class ColorTap {
 
         textPanel.setLayout(new BorderLayout());
         textPanel.add(textLabel);
-        textPanel.add(scoreLabel, BorderLayout.WEST);
         textPanel.add(timerLabel, BorderLayout.EAST);
         frame.add(textPanel, BorderLayout.NORTH);
 
@@ -150,15 +163,17 @@ public class ColorTap {
     }
 
     private void endGame(){
+        int totalTime = 0;
+        for (int time : reactionTimes) totalTime += time;
+        double avgReaction = totalTime / reactionTimes.size();
         cardLayout.show(mainPanel, "RESULTS");
+        resultsText.setText("<html>Your score: " + score + "<br>Average reaction time: " + (int) avgReaction + "ms");
     }
 
     private void onKeyPress(char key){
-        //System.out.println("key: " + key);
-        //System.out.println("curc: " + curColor);
         score += key == curColor ? 1 : -1;
         switchColor();
-        System.out.println(score);
+        textLabel.setText("Score: " + score); // Update the score
     }
 
     private void switchColor(){
@@ -175,6 +190,10 @@ public class ColorTap {
         }
         curColor = newColor;
         square.repaint();
+
+        reactionTimes.add(msElapsed);
+        System.out.println(msElapsed);
+        msElapsed = 0;
     }
 
     private void setupKeyControls() {
@@ -240,6 +259,4 @@ class ColoredSquarePanel extends JPanel {
         g.setColor(squareColor); // Set the color for the square
         g.fillRect(squareX, squareY, squareSize, squareSize); // Draw a filled rectangle (square)
     }
-
 }
-

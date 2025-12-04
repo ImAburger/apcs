@@ -11,24 +11,71 @@ import javax.swing.*;
 public class ColorTap {
     int boardWidth = 600;
     int boardHeight = 600;
+    int score = 0;
+
+    char curColor;
+    char[] colorKeys = {'R', 'B', 'G', 'Y'};
 
     JFrame frame = new JFrame("ColorTap");
     JLabel textLabel = new JLabel();
     JPanel textPanel = new JPanel();
     JPanel boardPanel = new JPanel();
-    JLabel timerLabel = new JLabel(); 
+    JLayeredPane pane = new JLayeredPane();
 
-    //countown timer starting value
-    int seconds = 60;
+    ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,90, 50, 400, false);
     
+    CardLayout cardLayout = new CardLayout();
+    JPanel mainPanel = new JPanel(cardLayout);
+    JPanel resultsPanel = new JPanel();
+
+    JPanel startScreen = new JPanel();
+    JButton startButton = new JButton("START");
+
+    JLabel instructions = new JLabel();
+
+    JLabel resultsText = new JLabel();
+
+    JLabel timerLabel = new JLabel(); 
+    Timer countdown;
+    private int seconds = 2;
     ColorTap(){
         // Create the window elements 
-        frame.setVisible(true);
+        startScreen.setLayout(new GridBagLayout());
+        startScreen.setBackground(Color.DARK_GRAY);
+
+        startButton.setFont(new Font("Arial", Font.BOLD, 40));
+        startScreen.add(startButton);
+
+        startButton.addActionListener(e -> { // Starting the game
+            cardLayout.show(mainPanel, "GAME");
+            //countdown timer that updates each second
+            countdown = new Timer(1000, ev -> {
+                seconds--;
+                if (seconds >= 0) {
+                    timerLabel.setText("Time: " + seconds + "s  ");
+                }
+
+                if (seconds <= 0) {
+                    timerLabel.setText("⏰ Time’s Up!  ");
+                    ((Timer)ev.getSource()).stop();
+                    endGame();
+                }
+            });
+
+            setupKeyControls(); // Start checking for key inputs
+            switchColor();
+        });
+
+        pane.setLayout(null);
+        pane.setPreferredSize(new Dimension(boardWidth,boardHeight));
+
         frame.setSize(boardWidth, boardHeight);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
+
+        ColoredSquarePanel bg = new ColoredSquarePanel(Color.BLACK, 0, 0, 600, true);
 
         textLabel.setBackground(Color.darkGray);
         textLabel.setForeground(Color.white);
@@ -37,7 +84,50 @@ public class ColorTap {
         textLabel.setText("Color Tap");
         textLabel.setOpaque(true);
 
-        //timer label that shows the countdown
+        textPanel.setLayout(new BorderLayout());
+        textPanel.add(textLabel);
+        frame.add(textPanel, BorderLayout.NORTH);
+
+        bg.setBounds(0,0,600,600);
+        square.setBounds(0,0,600,600);
+
+        pane.add(bg, Integer.valueOf(0));
+        pane.add(square, Integer.valueOf(1));
+        frame.add(pane);
+
+        instructions.setBackground(Color.darkGray);
+        instructions.setForeground(Color.white);
+        instructions.setFont(new Font("Arial", Font.BOLD, 30));
+        instructions.setText("Instructions\rHere");
+        instructions.setOpaque(true);
+
+        resultsText.setBackground(Color.darkGray);
+        resultsText.setForeground(Color.white);
+        resultsText.setFont(new Font("Arial", Font.BOLD, 30));
+        resultsText.setText("your did it!!!!");
+        resultsText.setOpaque(true);
+
+        startScreen.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.insets = new Insets(-200, 0, 0, 0);   // Move the instructions up 50 px
+        startScreen.add(instructions, gbc);
+
+        gbc.gridy = 1;
+        gbc.insets = new Insets(0, 0, 0, 0);   // Set the offset back to normal
+        startScreen.add(startButton, gbc);
+        mainPanel.add(startScreen, "START");
+        mainPanel.add(pane, "GAME");
+        mainPanel.add(resultsPanel, "RESULTS");
+        resultsPanel.add(resultsText);
+        frame.add(mainPanel);
+
+        pane.setFocusable(true);
+        pane.requestFocusInWindow(); // Focus the window so we can detect key presses
+
+        frame.setVisible(true);
+
+         //timer label that shows the countdown
         timerLabel.setBackground(Color.darkGray);
         timerLabel.setForeground(Color.white);
         timerLabel.setFont(new Font("Arial", Font.BOLD, 28));
@@ -53,46 +143,97 @@ public class ColorTap {
         boardPanel.setLayout(new GridLayout(3, 3));
         boardPanel.setBackground(Color.darkGray);
         frame.add(boardPanel);
-
-        //countdown timer that updates each second
-        Timer countdown = new Timer(1000, e -> {
-            seconds--;
-            if (seconds >= 0) {
-                timerLabel.setText("Time: " + seconds + "s  ");
-            }
-
-            if (seconds <= 0) {
-                timerLabel.setText(" Time’s Up!  ");
-                ((Timer)e.getSource()).stop();
-                endGame();
-            }
-
-        /*JButton tile = new JButton();
-                board[r][c] = tile;
-                boardPanel.add(tile);
-
-                tile.setBackground(Color.darkGray);
-                tile.setForeground(Color.white);
-                tile.setFont(new Font("Arial", Font.BOLD, 120));
-                tile.setFocusable(false);
-
-                tile.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e){
-                        if (gameOver) return; // Prevent button clicks when the game is over
-                        JButton tile = (JButton)e.getSource();
-                        if (tile.getText() == ""){ // Prevent overriding occupied tiles by checking that there's no X or O already there
-                            tile.setText(currentPlayer);
-                            turns++;
-                            checkWinner(); // After a move has been made, check if the game should keep going
-                            if (!gameOver){
-                                currentPlayer = currentPlayer == playerX ? playerO : playerX;
-                                textLabel.setText(currentPlayer + "'s turn"); // Update the top label to match whose turn it is
-                            }
-                        }
-                    }
-                });
-*/
     }
 
+    private void endGame(){
+        mainPanel.add(resultsPanel, "RESULTS");
+    }
+
+    private void onKeyPress(char key){
+        //System.out.println("key: " + key);
+        //System.out.println("curc: " + curColor);
+        score += key == curColor ? 1 : -1;
+        switchColor();
+        System.out.println(score);
+    }
+
+    private void switchColor(){
+        char newColor = curColor;
+        while (newColor == curColor) newColor = colorKeys[(int) (4 * Math.random())];
+        if (newColor == 'R'){
+            square.squareColor = Color.RED;
+        } else if (newColor == 'B'){
+            square.squareColor = Color.BLUE;
+        } else if (newColor == 'G'){
+            square.squareColor = Color.GREEN;
+        } else if (newColor == 'Y'){
+            square.squareColor = Color.YELLOW;
+        }
+        curColor = newColor;
+        square.repaint();
+    }
+
+    private void setupKeyControls() {
+        InputMap inputMap = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = pane.getActionMap();
+
+        // Detect if R was pressed
+        inputMap.put(KeyStroke.getKeyStroke("R"), "redPressed");
+        actionMap.put("redPressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onKeyPress('R');
+            }
+        });
+
+        // Detect if B was pressed
+        inputMap.put(KeyStroke.getKeyStroke("B"), "bluePressed");
+        actionMap.put("bluePressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onKeyPress('B');
+            }
+        });
+
+        // Detect if G was pressed
+        inputMap.put(KeyStroke.getKeyStroke("G"), "greenPressed");
+        actionMap.put("greenPressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onKeyPress('G');
+            }
+        });
+
+        // Detect if Y was pressed
+        inputMap.put(KeyStroke.getKeyStroke("Y"), "yellowPressed");
+        actionMap.put("yellowPressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onKeyPress('Y');
+            }
+        });
+    }
 }
 
+class ColoredSquarePanel extends JPanel {
+    public Color squareColor;
+    private int squareX, squareY, squareSize;
+
+    public ColoredSquarePanel(Color color, int x, int y, int size, boolean isBackground) {
+        this.squareColor = color;
+        this.squareX = x;
+        this.squareY = y;
+        this.squareSize = size;
+
+        setPreferredSize(new Dimension(size, size));
+        setOpaque(isBackground);   //  ONLY background is opaque
+    }
+    
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g); // Always call super.paintComponent() first
+
+        g.setColor(squareColor); // Set the color for the square
+        g.fillRect(squareX, squareY, squareSize, squareSize); // Draw a filled rectangle (square)
+    }
+}

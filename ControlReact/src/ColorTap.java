@@ -37,7 +37,7 @@ public class ColorTap {
 
     JLabel timerLabel = new JLabel(); 
     Timer countdown;
-    private int seconds = 2;
+    private int seconds = 60;
     ColorTap(){
         // Create the window elements 
         startScreen.setLayout(new GridBagLayout());
@@ -57,10 +57,11 @@ public class ColorTap {
 
                 if (seconds <= 0) {
                     timerLabel.setText("⏰ Time’s Up!  ");
-                    ((Timer)ev.getSource()).stop();
                     endGame();
+                    ((Timer)ev.getSource()).stop();
                 }
             });
+            countdown.start();
 
             setupKeyControls(); // Start checking for key inputs
             switchColor();
@@ -146,7 +147,7 @@ public class ColorTap {
     }
 
     private void endGame(){
-        mainPanel.add(resultsPanel, "RESULTS");
+        cardLayout.show(mainPanel, "RESULTS");
     }
 
     private void onKeyPress(char key){

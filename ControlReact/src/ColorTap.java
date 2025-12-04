@@ -62,7 +62,7 @@ public class ColorTap {
             }
 
             if (seconds <= 0) {
-                timerLabel.setText("⏰ Time’s Up!  ");
+                timerLabel.setText(" Time’s Up!  ");
                 ((Timer)e.getSource()).stop();
                 endGame();
             }
@@ -95,3 +95,4 @@ public class ColorTap {
     }
 
 }
+

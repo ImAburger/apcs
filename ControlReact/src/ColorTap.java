@@ -18,7 +18,9 @@ public class ColorTap {
     int score = 0; //player score
 
     char curColor; //current color letter
+    char curSize; //current square size
     char[] colorKeys = {'R', 'B', 'G', 'Y'}; //all possbile colors
+    char[] sizeTypes = {'S', 'M', 'L', 'XL'};
     ArrayList<Integer> reactionTimes = new ArrayList<>(); //stores each reaction time
     //GUI ELEMENTS
     JFrame frame = new JFrame("ColorTap");
@@ -210,6 +212,7 @@ public class ColorTap {
     //used whenever the player presses a color key
     private void onKeyPress(char key){
         score += key == curColor ? 1 : -1; //add or subtract to the score
+        
         switchColor(); //show a new color
         textLabel.setText("Score: " + score); // Update the score
     }
@@ -229,6 +232,22 @@ public class ColorTap {
         } else if (newColor == 'Y'){
             square.squareColor = Color.YELLOW;//yellow
         }
+
+        private void switchSize(){
+            char newSize = curSize;
+
+            while (newSize == curSize) newSize = sizeTypes[(int) (4* Math.random())];
+
+            if (newSize == 'S'){
+                ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,40, 0, 100, false);
+            }else if (newSize == 'M'){
+                ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,40, 0, 250, false);
+            }else if (newSize == 'L'){
+                ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,40, 0, 400, false);
+            }else if (newSize == 'XL'){
+                ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,40, 0, 450, false);
+            }
+                
         //set current color to new color
         curColor = newColor;
         square.repaint();
@@ -327,5 +346,6 @@ class ColoredSquarePanel extends JPanel {
         g.setColor(squareColor); // Set the color for the square
         g.fillRect(squareX, squareY, squareSize, squareSize); // Draw a filled rectangle (square)
     }
+
 
 }

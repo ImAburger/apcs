@@ -13,11 +13,11 @@ import javax.swing.*;
 public class ColorTap {
     int boardWidth = 600;
     int boardHeight = 600;
-    int score = 0;
+    int score = 0; //player score
 
-    char curColor;
-    char[] colorKeys = {'R', 'B', 'G', 'Y'};
-    ArrayList<Integer> reactionTimes = new ArrayList<>();
+    char curColor; //current color letter
+    char[] colorKeys = {'R', 'B', 'G', 'Y'}; //all possbile colors
+    ArrayList<Integer> reactionTimes = new ArrayList<>(); //stores each reaction time
 
     JFrame frame = new JFrame("ColorTap");
     JLabel textLabel = new JLabel();
@@ -25,6 +25,7 @@ public class ColorTap {
     JPanel boardPanel = new JPanel();
     JLayeredPane pane = new JLayeredPane();
 
+    //the colored square
     ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,90, 50, 400, false);
     
     CardLayout cardLayout = new CardLayout();
@@ -39,10 +40,11 @@ public class ColorTap {
     JLabel resultsText = new JLabel();
 
     JLabel timerLabel = new JLabel(); 
-    Timer countdown;
-    Timer reactionTimer;
-    private int seconds = 30;
-    private int msElapsed = 0;
+    
+    Timer countdown; //1 second countdown timer
+    Timer reactionTimer; //1 ms reaction timer
+    private int seconds = 30; //game time
+    private int msElapsed = 0; //ms since color appeared
     ColorTap(){
         // Create the window elements 
         startScreen.setLayout(new GridBagLayout());
@@ -60,7 +62,7 @@ public class ColorTap {
                 if (seconds >= 0) {
                     timerLabel.setText("Time: " + seconds + "s  ");
                 }
-
+                //timer stops when it reaches 0 seconds and switches to results screen
                 if (seconds <= 0) {
                     timerLabel.setText("Time’s Up!  ");
                     endGame();
@@ -69,15 +71,17 @@ public class ColorTap {
             });
             countdown.start();
 
+            //reaction timer
             reactionTimer = new Timer(1, ev -> {
-                msElapsed++;
+                msElapsed++; //increases every millisecond
             });
             reactionTimer.start();
 
             setupKeyControls(); // Start checking for key inputs
-            switchColor();
+            switchColor(); //show first random color
         });
 
+        //set up the size for the square and background
         pane.setLayout(null);
         pane.setPreferredSize(new Dimension(boardWidth,boardHeight));
 
@@ -87,8 +91,10 @@ public class ColorTap {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
+        //background panel
         ColoredSquarePanel bg = new ColoredSquarePanel(Color.BLACK, 0, 0, 600, true);
 
+        //score label at the top
         textLabel.setBackground(Color.darkGray);
         textLabel.setForeground(Color.white);
         textLabel.setFont(new Font("Arial", Font.BOLD, 50));
@@ -107,6 +113,7 @@ public class ColorTap {
         pane.add(square, Integer.valueOf(1));
         frame.add(pane);
 
+        //instructions on start screen
         instructions.setBackground(Color.darkGray);
         instructions.setForeground(Color.white);
         instructions.setPreferredSize(new Dimension(500, 300));
@@ -124,6 +131,7 @@ public class ColorTap {
         resultsText.setFont(new Font("Arial", Font.BOLD, 30));
         resultsText.setOpaque(true);
 
+        //start screen layout
         startScreen.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
@@ -133,6 +141,8 @@ public class ColorTap {
         gbc.gridy = 1;
         gbc.insets = new Insets(0, 0, 0, 0);   // Set the offset back to normal
         startScreen.add(startButton, gbc);
+
+        //add all screens to card layout
         mainPanel.add(startScreen, "START");
         mainPanel.add(pane, "GAME");
         mainPanel.add(resultsPanel, "RESULTS");
@@ -162,23 +172,29 @@ public class ColorTap {
         frame.add(boardPanel);
     }
 
+    //END GAME
     private void endGame(){
         int totalTime = 0;
         for (int time : reactionTimes) totalTime += time;
         double avgReaction = totalTime / reactionTimes.size();
+        //switch to results screen
         cardLayout.show(mainPanel, "RESULTS");
         resultsText.setText("<html>Your score: " + score + "<br>Average reaction time: " + (int) avgReaction + "ms");
     }
 
+    //used whenever the player presses a color key
     private void onKeyPress(char key){
-        score += key == curColor ? 1 : -1;
-        switchColor();
+        score += key == curColor ? 1 : -1; //add or subtract to the score
+        switchColor(); //show a new color
         textLabel.setText("Score: " + score); // Update the score
     }
 
+    //change to a new random color
     private void switchColor(){
         char newColor = curColor;
+        //pick a different color than last time
         while (newColor == curColor) newColor = colorKeys[(int) (4 * Math.random())];
+        //update square color
         if (newColor == 'R'){
             square.squareColor = Color.RED;
         } else if (newColor == 'B'){
@@ -191,11 +207,14 @@ public class ColorTap {
         curColor = newColor;
         square.repaint();
 
+        //store reaction time
         reactionTimes.add(msElapsed);
         System.out.println(msElapsed);
+        //reset timer for the next reaction measurement
         msElapsed = 0;
     }
 
+    //setup keyboard controls for R, B, G, Y
     private void setupKeyControls() {
         InputMap inputMap = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = pane.getActionMap();
@@ -237,7 +256,7 @@ public class ColorTap {
         });
     }
 }
-
+//draws a colored square
 class ColoredSquarePanel extends JPanel {
     public Color squareColor;
     private int squareX, squareY, squareSize;
@@ -256,7 +275,9 @@ class ColoredSquarePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g); // Always call super.paintComponent() first
 
+        //draw the actual square
         g.setColor(squareColor); // Set the color for the square
         g.fillRect(squareX, squareY, squareSize, squareSize); // Draw a filled rectangle (square)
     }
+
 }

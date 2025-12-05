@@ -1,5 +1,3 @@
-
-
 /**
  * Control-React color program
  * @author Nicholas & Hector
@@ -20,7 +18,7 @@ public class ColorTap {
     char curColor; //current color letter
     char curSize; //current square size
     char[] colorKeys = {'R', 'B', 'G', 'Y'}; //all possbile colors
-    char[] sizeTypes = {'S', 'M', 'L', 'XL'};
+    char[] sizeTypes = {'S', 'M', 'L', 'X'};
     ArrayList<Integer> reactionTimes = new ArrayList<>(); //stores each reaction time
     //GUI ELEMENTS
     JFrame frame = new JFrame("ColorTap");
@@ -232,21 +230,8 @@ public class ColorTap {
         } else if (newColor == 'Y'){
             square.squareColor = Color.YELLOW;//yellow
         }
-
-        private void switchSize(){
-            char newSize = curSize;
-
-            while (newSize == curSize) newSize = sizeTypes[(int) (4* Math.random())];
-
-            if (newSize == 'S'){
-                ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,40, 0, 100, false);
-            }else if (newSize == 'M'){
-                ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,40, 0, 250, false);
-            }else if (newSize == 'L'){
-                ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,40, 0, 400, false);
-            }else if (newSize == 'XL'){
-                ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,40, 0, 450, false);
-            }
+        switchSize(); // Switch the square's size
+        switchPosition();
                 
         //set current color to new color
         curColor = newColor;
@@ -259,6 +244,27 @@ public class ColorTap {
         msElapsed = 0;
     }
 
+    private void switchPosition(){
+        square.squareX = (int) ((Math.random() * (boardWidth - 500)));
+        square.squareY = (int) ((Math.random() * (boardHeight - 300)) - 100);
+    }
+
+    private void switchSize(){
+        char newSize = curSize;
+        while (newSize == curSize) newSize = sizeTypes[(int) (4* Math.random())];
+
+        if (newSize == 'S'){
+            square.squareSize = 100;
+        } else if (newSize == 'M'){
+            square.squareSize = 250;
+        } else if (newSize == 'L'){
+            square.squareSize = 400;
+        } else if (newSize == 'X'){
+            square.squareSize = 450;
+        }
+        curSize = newSize;
+    }
+    
     //setup keyboard controls for R, B, G, Y
     private void setupKeyControls() {
         InputMap inputMap = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -326,7 +332,7 @@ public class ColorTap {
 //draws a colored square
 class ColoredSquarePanel extends JPanel {
     public Color squareColor;
-    private int squareX, squareY, squareSize;
+    public int squareX, squareY, squareSize;
     // Constructor to initialize the colored square panel
     public ColoredSquarePanel(Color color, int x, int y, int size, boolean isBackground) {
         this.squareColor = color;
@@ -346,6 +352,5 @@ class ColoredSquarePanel extends JPanel {
         g.setColor(squareColor); // Set the color for the square
         g.fillRect(squareX, squareY, squareSize, squareSize); // Draw a filled rectangle (square)
     }
-
 
 }

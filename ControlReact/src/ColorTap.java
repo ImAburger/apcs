@@ -49,7 +49,7 @@ public class ColorTap {
     
     Timer countdown; //1 second countdown timer
     Timer reactionTimer; //1 ms reaction timer
-    private int seconds = 5; //game time
+    int seconds = 30; //game time
     private int msElapsed = 0; //ms since color appeared
 
     

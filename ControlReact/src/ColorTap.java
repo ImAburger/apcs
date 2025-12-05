@@ -1,15 +1,17 @@
+
+
 /**
  * Control-React color program
  * @author Nicholas & Hector
  * @since 12/3/2025
  */
-
+//IMPORTS
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
 import javax.swing.*;
-
+//MAIN CLASS
 public class ColorTap {
     int boardWidth = 600;
     int boardHeight = 600;
@@ -18,7 +20,7 @@ public class ColorTap {
     char curColor; //current color letter
     char[] colorKeys = {'R', 'B', 'G', 'Y'}; //all possbile colors
     ArrayList<Integer> reactionTimes = new ArrayList<>(); //stores each reaction time
-
+    //GUI ELEMENTS
     JFrame frame = new JFrame("ColorTap");
     JLabel textLabel = new JLabel();
     JPanel textPanel = new JPanel();
@@ -28,31 +30,38 @@ public class ColorTap {
     //the colored square
     ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,90, 50, 400, false);
     
+    // Card layout to switch between different screens
     CardLayout cardLayout = new CardLayout();
     JPanel mainPanel = new JPanel(cardLayout);
     JPanel resultsPanel = new JPanel();
-
+    //START SCREEN ELEMENTS
     JPanel startScreen = new JPanel();
     JButton startButton = new JButton("START");
-
+    //instructions for the game
     JLabel instructions = new JLabel();
-
+    //RESULTS SCREEN ELEMENTS
     JLabel resultsText = new JLabel();
-
+    //timer label that shows the countdown
     JLabel timerLabel = new JLabel(); 
+
+    // Button that lets the player restart the game from the results screen
+    JButton playAgainButton = new JButton("Play Again");
     
     Timer countdown; //1 second countdown timer
     Timer reactionTimer; //1 ms reaction timer
     private int seconds = 30; //game time
     private int msElapsed = 0; //ms since color appeared
+
+    
+
     ColorTap(){
         // Create the window elements 
         startScreen.setLayout(new GridBagLayout());
         startScreen.setBackground(Color.DARK_GRAY);
-
+        //start button setup
         startButton.setFont(new Font("Arial", Font.BOLD, 40));
         startScreen.add(startButton);
-
+        // start button action listener
         startButton.addActionListener(e -> { // Starting the game
             cardLayout.show(mainPanel, "GAME");
             textLabel.setText("Score: 0");
@@ -69,7 +78,7 @@ public class ColorTap {
                     ((Timer)ev.getSource()).stop();
                 }
             });
-            countdown.start();
+            countdown.start(); //start countdown timer
 
             //reaction timer
             reactionTimer = new Timer(1, ev -> {
@@ -85,6 +94,7 @@ public class ColorTap {
         pane.setLayout(null);
         pane.setPreferredSize(new Dimension(boardWidth,boardHeight));
 
+        //frame setup
         frame.setSize(boardWidth, boardHeight);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
@@ -102,13 +112,14 @@ public class ColorTap {
         textLabel.setText("Color Tap");
         textLabel.setOpaque(true);
 
+        // Text panel setup
         textPanel.setLayout(new BorderLayout());
         textPanel.add(textLabel);
         frame.add(textPanel, BorderLayout.NORTH);
-
+        //set bounds for background and square
         bg.setBounds(0,0,600,600);
-        square.setBounds(0,0,500,500);
-
+        square.setBounds(50,50,500,500);
+        //add background and square to layered pane
         pane.add(bg, Integer.valueOf(0));
         pane.add(square, Integer.valueOf(1));
         frame.add(pane);
@@ -124,7 +135,7 @@ public class ColorTap {
             " You will have a minute to try to correctly press the right key as fast as possible.</html>"
         );
         instructions.setOpaque(true);
-
+        //results text setup
         resultsText.setPreferredSize(new Dimension(500, 300));
         resultsText.setBackground(Color.darkGray);
         resultsText.setForeground(Color.white);
@@ -137,7 +148,7 @@ public class ColorTap {
         gbc.gridy = 0;
         gbc.insets = new Insets(-250, 0, 0, 0);   // Move the instructions up 50 px
         startScreen.add(instructions, gbc);
-
+        //start button layout
         gbc.gridy = 1;
         gbc.insets = new Insets(0, 0, 0, 0);   // Set the offset back to normal
         startScreen.add(startButton, gbc);
@@ -145,10 +156,21 @@ public class ColorTap {
         //add all screens to card layout
         mainPanel.add(startScreen, "START");
         mainPanel.add(pane, "GAME");
+        //results screen layout
+        resultsPanel.setLayout(new GridBagLayout());
+        GridBagConstraints r = new GridBagConstraints();
+        //results text layout
+        r.gridx = 0;
+        r.gridy = 0;
+        resultsPanel.add(resultsText, r); // Show results
+        //play again button layout
+        r.gridy = 1;
+        r.insets = new Insets(20, 0, 0, 0); // Space between elements
+        resultsPanel.add(playAgainButton, r); // Add Play Again button
+        resultsPanel.setBackground(Color.DARK_GRAY);
         mainPanel.add(resultsPanel, "RESULTS");
-        resultsPanel.add(resultsText);
         frame.add(mainPanel);
-
+        // Focus settings
         pane.setFocusable(true);
         pane.requestFocusInWindow(); // Focus the window so we can detect key presses
 
@@ -161,22 +183,25 @@ public class ColorTap {
         timerLabel.setHorizontalAlignment(JLabel.RIGHT);
         timerLabel.setText("Time: " + seconds + "s  ");
         timerLabel.setOpaque(true);
-
+        //add timer label to the top panel
         textPanel.setLayout(new BorderLayout());
         textPanel.add(textLabel);
         textPanel.add(timerLabel, BorderLayout.EAST);
         frame.add(textPanel, BorderLayout.NORTH);
-
+        //board panel setup
         boardPanel.setLayout(new GridLayout(3, 3));
         boardPanel.setBackground(Color.darkGray);
         frame.add(boardPanel);
+
+        // Restart the game when the Play Again button is clicked
+         playAgainButton.addActionListener(e -> restartGame());
     }
 
     //END GAME
     private void endGame(){
         int totalTime = 0;
         for (int time : reactionTimes) totalTime += time;
-        double avgReaction = totalTime / reactionTimes.size();
+        double avgReaction = reactionTimes.size() > 0 ? totalTime / (double) reactionTimes.size() : 0;
         //switch to results screen
         cardLayout.show(mainPanel, "RESULTS");
         resultsText.setText("<html>Your score: " + score + "<br>Average reaction time: " + (int) avgReaction + "ms");
@@ -196,14 +221,15 @@ public class ColorTap {
         while (newColor == curColor) newColor = colorKeys[(int) (4 * Math.random())];
         //update square color
         if (newColor == 'R'){
-            square.squareColor = Color.RED;
+            square.squareColor = Color.RED;//red
         } else if (newColor == 'B'){
-            square.squareColor = Color.BLUE;
+            square.squareColor = Color.BLUE;//blue
         } else if (newColor == 'G'){
-            square.squareColor = Color.GREEN;
+            square.squareColor = Color.GREEN;//green
         } else if (newColor == 'Y'){
-            square.squareColor = Color.YELLOW;
+            square.squareColor = Color.YELLOW;//yellow
         }
+        //set current color to new color
         curColor = newColor;
         square.repaint();
 
@@ -253,14 +279,36 @@ public class ColorTap {
             public void actionPerformed(ActionEvent e) {
                 onKeyPress('Y');
             }
+            
         });
+
+
+        
+    }
+    // Resets the game state and starts a new game
+    private void restartGame() {
+        score = 0;
+        seconds = 30;
+        reactionTimes.clear();
+        msElapsed = 0;
+        // Reset labels
+        textLabel.setText("Score: 0");
+        timerLabel.setText("Time: 30s");
+        // Switch to game screen
+        cardLayout.show(mainPanel, "GAME");
+        // Restart timers
+        countdown.start();
+        reactionTimer.start();
+
+        switchColor();
     }
 }
+    
 //draws a colored square
 class ColoredSquarePanel extends JPanel {
     public Color squareColor;
     private int squareX, squareY, squareSize;
-
+    // Constructor to initialize the colored square panel
     public ColoredSquarePanel(Color color, int x, int y, int size, boolean isBackground) {
         this.squareColor = color;
         this.squareX = x;
@@ -281,3 +329,5 @@ class ColoredSquarePanel extends JPanel {
     }
 
 }
+
+

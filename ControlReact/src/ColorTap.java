@@ -28,7 +28,7 @@ public class ColorTap {
     JLayeredPane pane = new JLayeredPane();
 
     //the colored square
-    ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,90, 50, 400, false);
+    ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,40, 0, 400, false);
     
     // Card layout to switch between different screens
     CardLayout cardLayout = new CardLayout();
@@ -49,7 +49,7 @@ public class ColorTap {
     
     Timer countdown; //1 second countdown timer
     Timer reactionTimer; //1 ms reaction timer
-    private int seconds = 30; //game time
+    private int seconds = 5; //game time
     private int msElapsed = 0; //ms since color appeared
 
     
@@ -204,7 +204,7 @@ public class ColorTap {
         double avgReaction = reactionTimes.size() > 0 ? totalTime / (double) reactionTimes.size() : 0;
         //switch to results screen
         cardLayout.show(mainPanel, "RESULTS");
-        resultsText.setText("<html>Your score: " + score + "<br>Average reaction time: " + (int) avgReaction + "ms");
+        resultsText.setText("<html>Your score: " + score + "<br>Average reaction time: " + (avgReaction > 0 ? (int) avgReaction + "ms" : "N/A"));
     }
 
     //used whenever the player presses a color key
@@ -235,7 +235,7 @@ public class ColorTap {
 
         //store reaction time
         reactionTimes.add(msElapsed);
-        System.out.println(msElapsed);
+        //System.out.println(msElapsed);
         //reset timer for the next reaction measurement
         msElapsed = 0;
     }
@@ -329,5 +329,3 @@ class ColoredSquarePanel extends JPanel {
     }
 
 }
-
-

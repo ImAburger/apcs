@@ -209,8 +209,9 @@ public class ColorTap {
 
     //used whenever the player presses a color key
     private void onKeyPress(char key){
+        reactionTimes.add(msElapsed); //store reaction time
+        msElapsed = 0; //reset timer for next reaction measurement
         score += key == curColor ? 1 : -1; //add or subtract to the score
-        
         switchColor(); //show a new color
         textLabel.setText("Score: " + score); // Update the score
     }
@@ -236,12 +237,6 @@ public class ColorTap {
         //set current color to new color
         curColor = newColor;
         square.repaint(); // Redraw the square with the new color
-
-        //store reaction time
-        reactionTimes.add(msElapsed);
-        
-        //reset timer for the next reaction measurement
-        msElapsed = 0;
     }
     //move the square to a new random position
     private void switchPosition(){
@@ -321,12 +316,8 @@ public class ColorTap {
         textLabel.setText("Score: 0");
         timerLabel.setText("Time: 30s");
         // Switch to game screen
-        cardLayout.show(mainPanel, "GAME");
-        // Restart timers
-        countdown.start();
-        reactionTimer.start();
+        cardLayout.show(mainPanel, "START");
 
-        switchColor();
     }
 }
     
@@ -355,4 +346,3 @@ class ColoredSquarePanel extends JPanel {
     }
 
 }
-

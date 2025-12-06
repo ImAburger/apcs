@@ -132,7 +132,7 @@ public class ColorTap {
         instructions.setText("<html>The goal of this game is to correctly press the right key on the keyboard that matches the 4 colors when a color is displayed on the screen.<br>" +
             "For example, if the color displayed on the screen is blue, you would press the key “B”.<br>" +
             " For each correct press, your score will go up. For each incorrect press, your score will go down.<br>" +
-            " You will have a minute to try to correctly press the right key as fast as possible.</html>"
+            " You will have 30 seconds to try to correctly press the right key as fast as possible.</html>"
         );
         instructions.setOpaque(true);
         //results text setup
@@ -355,3 +355,4 @@ class ColoredSquarePanel extends JPanel {
     }
 
 }
+

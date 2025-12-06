@@ -18,7 +18,7 @@ public class ColorTap {
     char curColor; //current color letter
     char curSize; //current square size
     char[] colorKeys = {'R', 'B', 'G', 'Y'}; //all possbile colors
-    char[] sizeTypes = {'S', 'M', 'L', 'X'};
+    char[] sizeTypes = {'S', 'M', 'L', 'X'}; //all possible sizes: small, medium, large, xlarge
     ArrayList<Integer> reactionTimes = new ArrayList<>(); //stores each reaction time
     //GUI ELEMENTS
     JFrame frame = new JFrame("ColorTap");
@@ -231,38 +231,39 @@ public class ColorTap {
             square.squareColor = Color.YELLOW;//yellow
         }
         switchSize(); // Switch the square's size
-        switchPosition();
+        switchPosition(); // Switch the square's position
                 
         //set current color to new color
         curColor = newColor;
-        square.repaint();
+        square.repaint(); // Redraw the square with the new color
 
         //store reaction time
         reactionTimes.add(msElapsed);
-        //System.out.println(msElapsed);
+        
         //reset timer for the next reaction measurement
         msElapsed = 0;
     }
-
+    //move the square to a new random position
     private void switchPosition(){
-        square.squareX = (int) ((Math.random() * (boardWidth - 500)));
-        square.squareY = (int) ((Math.random() * (boardHeight - 300)) - 100);
+        square.squareX = (int) ((Math.random() * (boardWidth - 500))); //x position
+        square.squareY = (int) ((Math.random() * (boardHeight - 300)) - 100); //y position
     }
 
+    //change to a new random size
     private void switchSize(){
-        char newSize = curSize;
-        while (newSize == curSize) newSize = sizeTypes[(int) (4* Math.random())];
-
+        char newSize = curSize; //pick a different size than last time
+        while (newSize == curSize) newSize = sizeTypes[(int) (4* Math.random())];//4 possible sizes
+        //update square size
         if (newSize == 'S'){
-            square.squareSize = 100;
+            square.squareSize = 100; //small
         } else if (newSize == 'M'){
-            square.squareSize = 250;
+            square.squareSize = 250; //medium
         } else if (newSize == 'L'){
-            square.squareSize = 400;
+            square.squareSize = 400; //large
         } else if (newSize == 'X'){
-            square.squareSize = 450;
+            square.squareSize = 450; //extra large
         }
-        curSize = newSize;
+        curSize = newSize;//set current size to new size
     }
     
     //setup keyboard controls for R, B, G, Y

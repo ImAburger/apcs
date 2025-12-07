@@ -213,7 +213,7 @@ public class ColorTap {
         msElapsed = 0; //reset timer for next reaction measurement
         score += key == curColor ? 1 : -1; //add or subtract to the score
         switchColor(); //show a new color
-        textLabel.setText("Score: " + score); // Update the score
+        textLabel.setText("Score: " + score); // Update the score display
     }
 
     //change to a new random color
@@ -300,20 +300,19 @@ public class ColorTap {
             public void actionPerformed(ActionEvent e) {
                 onKeyPress('Y');
             }
-            
         });
-
-
-        
     }
+
     // Resets the game state and starts a new game
     private void restartGame() {
+        // Reset variables
         score = 0;
         seconds = 30;
         reactionTimes.clear();
+        reactionTimer = null; // Destroy the timer until the start button is clicked again
         msElapsed = 0;
         // Reset labels
-        textLabel.setText("Score: 0");
+        textLabel.setText("Color Tap");
         timerLabel.setText("Time: 30s");
         // Switch to game screen
         cardLayout.show(mainPanel, "START");

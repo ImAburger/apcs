@@ -2,7 +2,7 @@
  * Control-React color program
  * @author Nicholas & Hector
  * @since 12/3/2025
- */
+*/
 //IMPORTS
 import java.awt.*;
 import java.awt.event.*;
@@ -39,6 +39,7 @@ public class ColorTap {
     JButton startButton = new JButton("START");
     //instructions for the game
     JLabel instructions = new JLabel();
+    JLabel instructions2 = new JLabel();
     //RESULTS SCREEN ELEMENTS
     JLabel resultsText = new JLabel();
     //timer label that shows the countdown
@@ -124,17 +125,6 @@ public class ColorTap {
         pane.add(square, Integer.valueOf(1));
         frame.add(pane);
 
-        //instructions on start screen
-        instructions.setBackground(Color.darkGray);
-        instructions.setForeground(Color.white);
-        instructions.setPreferredSize(new Dimension(500, 300));
-        instructions.setFont(new Font("Arial", Font.BOLD, 20));
-        instructions.setText("<html>The goal of this game is to correctly press the right key on the keyboard that matches the 4 colors when a color is displayed on the screen.<br>" +
-            "For example, if the color displayed on the screen is blue, you would press the key “B”.<br>" +
-            " For each correct press, your score will go up. For each incorrect press, your score will go down.<br>" +
-            " You will have 30 seconds to try to correctly press the right key as fast as possible.</html>"
-        );
-        instructions.setOpaque(true);
         //results text setup
         resultsText.setPreferredSize(new Dimension(500, 300));
         resultsText.setBackground(Color.darkGray);
@@ -142,16 +132,61 @@ public class ColorTap {
         resultsText.setFont(new Font("Arial", Font.BOLD, 30));
         resultsText.setOpaque(true);
 
-        //start screen layout
+        // ---------- START SCREEN LAYOUT ----------
         startScreen.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridy = 0;
-        gbc.insets = new Insets(-250, 0, 0, 0);   // Move the instructions up 50 px
-        startScreen.add(instructions, gbc);
-        //start button layout
-        gbc.gridy = 1;
-        gbc.insets = new Insets(0, 0, 0, 0);   // Set the offset back to normal
-        startScreen.add(startButton, gbc);
+
+        // ---------- INSTRUCTIONS (TOP CENTER) ----------
+        instructions.setBackground(Color.darkGray);
+        instructions.setForeground(Color.white);
+        instructions.setPreferredSize(new Dimension(500, 300));
+        instructions.setFont(new Font("Arial", Font.BOLD, 20));
+        instructions.setText("<html>The goal of this game is to press the key on the keyboard that matches the color displayed on the screen.<br>" +
+            "There are 4 possible colors: Red, Blue, Green, and Yellow.<br>" +
+            "For each correct press, your score will go up. For each incorrect press, your score will go down.<br>" +
+            "You will have 30 seconds to try to get the highest score possible!</html>"
+        );
+        instructions.setOpaque(true);
+
+        GridBagConstraints gbc1 = new GridBagConstraints();
+        gbc1.gridx = 0;
+        gbc1.gridy = 0;
+        gbc1.anchor = GridBagConstraints.NORTH;
+        gbc1.insets = new Insets(20, 20, 20, 20);
+        gbc1.weightx = 1; // allow horizontal expansion
+        gbc1.fill = GridBagConstraints.HORIZONTAL; // allow full width
+        startScreen.add(instructions, gbc1);
+
+        // ---------- START BUTTON (CENTER) ----------
+        GridBagConstraints gbc2 = new GridBagConstraints();
+        gbc2.gridx = 0;
+        gbc2.gridy = 1;
+        gbc2.weighty = 1; // centers it vertically
+        gbc2.anchor = GridBagConstraints.CENTER; // put it in the exact center
+        gbc2.insets = new Insets(20, 0, 20, 0);
+        startScreen.add(startButton, gbc2);
+
+
+        // ---------- CONTROLS (BOTTOM CENTER) ----------
+        instructions2.setBackground(Color.darkGray);
+        instructions2.setForeground(Color.white);
+        instructions2.setPreferredSize(new Dimension(300, 200));
+        instructions2.setFont(new Font("Arial", Font.BOLD, 20));
+        instructions2.setText("<html>CONTROLS (the keys you need to press)<br>" +
+            "R → red<br>" +
+            "B → blue<br>" +
+            "G → green<br>" +
+            "Y → yellow</html>"
+        );
+        instructions2.setOpaque(true);
+
+        GridBagConstraints gbc3 = new GridBagConstraints();
+        gbc3.gridx = 0;
+        gbc3.gridy = 2;
+        gbc3.anchor = GridBagConstraints.SOUTH;
+        gbc3.insets = new Insets(20, 20, 20, 20);
+        gbc3.weightx = 1;
+        gbc3.fill = GridBagConstraints.HORIZONTAL;
+        startScreen.add(instructions2, gbc3);
 
         //add all screens to card layout
         mainPanel.add(startScreen, "START");

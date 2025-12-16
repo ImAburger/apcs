@@ -3,19 +3,20 @@
  * @author Nicholas & Hector
  * @since 12/3/2025
 */
+
 //IMPORTS
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-
 import javax.swing.*;
+
 //MAIN CLASS
 public class ColorTap {
-    int boardWidth = 600;
+    int boardWidth = 600; // Variables to represent the width/height of the window
     int boardHeight = 600;
     int score = 0; //player score
 
-    char curColor; //current color letter
+    char curColor; //represents the current color, I like to use char because we don't need all the extra bells and whistles from Strings
     char curSize; //current square size
     char[] colorKeys = {'R', 'B', 'G', 'Y'}; //all possbile colors
     char[] sizeTypes = {'S', 'M', 'L', 'X'}; //all possible sizes: small, medium, large, xlarge
@@ -25,7 +26,7 @@ public class ColorTap {
     JLabel textLabel = new JLabel();
     JPanel textPanel = new JPanel();
     JPanel boardPanel = new JPanel();
-    JLayeredPane pane = new JLayeredPane();
+    JLayeredPane pane = new JLayeredPane(); // Holder that allows us to layer the UI elements
 
     //the colored square
     ColoredSquarePanel square = new ColoredSquarePanel(Color.GREEN,40, 0, 400, false);
@@ -96,11 +97,11 @@ public class ColorTap {
         pane.setPreferredSize(new Dimension(boardWidth,boardHeight));
 
         //frame setup
-        frame.setSize(boardWidth, boardHeight);
+        frame.setSize(boardWidth, boardHeight); // Scale the window
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new BorderLayout());
+        frame.setLayout(new BorderLayout()); // This essentially gives it the properties of a typical window
 
         //background panel
         ColoredSquarePanel bg = new ColoredSquarePanel(Color.BLACK, 0, 0, 600, true);
@@ -133,7 +134,7 @@ public class ColorTap {
         resultsText.setOpaque(true);
 
         // ---------- START SCREEN LAYOUT ----------
-        startScreen.setLayout(new GridBagLayout());
+        startScreen.setLayout(new GridBagLayout()); // This allows us to position things on the start screen
 
         // ---------- INSTRUCTIONS (TOP CENTER) ----------
         instructions.setBackground(Color.darkGray);
@@ -147,6 +148,7 @@ public class ColorTap {
         );
         instructions.setOpaque(true);
 
+        // The below GridBagConstraints allow us to precisely position the UI elements
         GridBagConstraints gbc1 = new GridBagConstraints();
         gbc1.gridx = 0;
         gbc1.gridy = 0;
@@ -229,7 +231,7 @@ public class ColorTap {
         frame.add(boardPanel);
 
         // Restart the game when the Play Again button is clicked
-         playAgainButton.addActionListener(e -> restartGame());
+        playAgainButton.addActionListener(e -> restartGame());
     }
 
     //END GAME
@@ -297,18 +299,19 @@ public class ColorTap {
     }
     
     //setup keyboard controls for R, B, G, Y
-    private void setupKeyControls() {
-        InputMap inputMap = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap actionMap = pane.getActionMap();
+    private void setupKeyControls() { // the below lines tell the GUI: "When this window is focused, listen for key presses"
+        InputMap inputMap = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW); // inputMap stores which keys trigger which action names
+        ActionMap actionMap = pane.getActionMap(); // actionMap connects an action name to the actual code that runs
 
         // Detect if R was pressed
-        inputMap.put(KeyStroke.getKeyStroke("R"), "redPressed");
-        actionMap.put("redPressed", new AbstractAction() {
-            @Override
+        inputMap.put(KeyStroke.getKeyStroke("R"), "redPressed"); // This represents the 'R' key on the keyboard
+        actionMap.put("redPressed", new AbstractAction() { // Here, we're adding our keystroke action to the action map
+            @Override // This tells Java we are taking over the "actionPerformed" function inside AbstractAction and replacing it with our custom version
             public void actionPerformed(ActionEvent e) {
                 onKeyPress('R');
             }
         });
+        // ^^ Now that we have this template, we can copy this code to detect when the other keys are pressed
 
         // Detect if B was pressed
         inputMap.put(KeyStroke.getKeyStroke("B"), "bluePressed");
@@ -351,11 +354,11 @@ public class ColorTap {
         timerLabel.setText("Time: 30s");
         // Switch to game screen
         cardLayout.show(mainPanel, "START");
-
     }
 }
     
-//draws a colored square
+// Custom version of JPanel with custom coloring properties!!!
+// This is what lets us set the color we want for the main square and background
 class ColoredSquarePanel extends JPanel {
     public Color squareColor;
     public int squareX, squareY, squareSize;
@@ -367,16 +370,16 @@ class ColoredSquarePanel extends JPanel {
         this.squareSize = size;
 
         setPreferredSize(new Dimension(size, size));
-        setOpaque(isBackground);   //  ONLY background is opaque
+        setOpaque(isBackground);   //  ONLY background is opaque, we need this to make sure the background isn't invisible
     }
     
-    @Override
+    @Override // Override the coloring function from the original JPanel class to allow us to set our own colors
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g); // Always call super.paintComponent() first
+        super.paintComponent(g); // Always call super.paintComponent() from the regular JPanel class first
 
-        //draw the actual square
+        // Now that we've called the parent JPanel function, this runs our added code to color it 
         g.setColor(squareColor); // Set the color for the square
-        g.fillRect(squareX, squareY, squareSize, squareSize); // Draw a filled rectangle (square)
+        g.fillRect(squareX, squareY, squareSize, squareSize); // Redraw the filled square
     }
 
 }
